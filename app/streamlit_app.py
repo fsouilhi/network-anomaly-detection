@@ -68,6 +68,8 @@ st.markdown("""
     section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] h3 { color: #f1f5f9 !important; font-weight: 700; }
     section[data-testid="stSidebar"] [data-baseweb="select"] { background: #1e293b !important; }
     section[data-testid="stSidebar"] [data-baseweb="select"] * { color: #1e293b !important; }
+    section[data-testid="stSidebar"] [data-baseweb="select"] div { color: #1e293b !important; }
+    section[data-testid="stSidebar"] [data-baseweb="select"] span { color: #1e293b !important; }
 </style>
 """, unsafe_allow_html=True)
 
