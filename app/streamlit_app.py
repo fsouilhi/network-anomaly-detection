@@ -63,16 +63,12 @@ st.markdown("""
     .normal-card h3 { margin: 0; font-size: 0.8rem; color: #94a3b8; letter-spacing: 0.05em; }
     .normal-card p  { margin: 0.2rem 0 0; font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
     section[data-testid="stSidebar"] { background: #0f172a; }
-    section[data-testid="stSidebar"] * { color: #e2e8f0 !important; }
-    section[data-testid="stSidebar"] label { color: #f1f5f9 !important; font-weight: 500; }
-    section[data-testid="stSidebar"] h2, section[data-testid="stSidebar"] h3 { color: #f1f5f9 !important; font-weight: 700; }
-    section[data-testid="stSidebar"] [data-baseweb="select"] { background: #1e293b !important; }
-    section[data-testid="stSidebar"] [data-baseweb="select"] * { color: #f1f5f9 !important; }
-section[data-testid="stSidebar"] [data-baseweb="select"] [data-baseweb="select-option"] { color: #1e293b !important; }
-section[data-testid="stSidebar"] div[class*="ValueContainer"] * { color: #f1f5f9 !important; }
-section[data-testid="stSidebar"] div[class*="singleValue"] { color: #f1f5f9 !important; }
-    section[data-testid="stSidebar"] [data-baseweb="select"] div { color: #1e293b !important; }
-    section[data-testid="stSidebar"] [data-baseweb="select"] span { color: #1e293b !important; }
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] div { color: #e2e8f0; }
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 { color: #f1f5f9; font-weight: 700; }
 </style>
 """, unsafe_allow_html=True)
 
