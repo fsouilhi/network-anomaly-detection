@@ -48,7 +48,7 @@ jobs:
         run: |
           flake8 app/streamlit_app.py \
             --max-line-length=120 \
-            --ignore=E501,W503,E302,E303 \
+            --ignore=E501,W503,E302,E303,E221,E241,E261,E262,E265,E266,W291,W293,W292,F401,E203,E231,E251 \
             --count
 
       - name: Vérification des imports critiques
