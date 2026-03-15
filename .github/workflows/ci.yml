@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-validate:
+    name: Validation du notebook et du code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Installation des dépendances
+        run: |
+          pip install --quiet \
+            nbformat \
+            flake8 \
+            scikit-learn \
+            pandas \
+            numpy \
+            matplotlib \
+            seaborn
+
+      - name: Validation du format du notebook
+        run: |
+          python - << 'EOF'
+          import nbformat, sys, glob
+          notebooks = glob.glob('notebook/*.ipynb')
+          if not notebooks:
+              print('Aucun notebook trouvé.')
+              sys.exit(1)
+          for path in notebooks:
+              with open(path) as f:
+                  nb = nbformat.read(f, as_version=4)
+              print(f'Notebook valide : {path} ({len(nb.cells)} cellules)')
+          EOF
+
+      - name: Lint de l'application Streamlit
+        run: |
+          flake8 app/streamlit_app.py \
+            --max-line-length=120 \
+            --ignore=E501,W503,E302,E303 \
+            --count
+
+      - name: Vérification des imports critiques
+        run: |
+          python - << 'EOF'
+          import sklearn, numpy, pandas, matplotlib, seaborn
+          print(f'scikit-learn : {sklearn.__version__}')
+          print(f'numpy        : {numpy.__version__}')
+          print(f'pandas       : {pandas.__version__}')
+          print(f'matplotlib   : {matplotlib.__version__}')
+          print(f'seaborn      : {seaborn.__version__}')
+          print('Tous les imports validés.')
+          EOF
+
+  notebook-smoke-test:
+    name: Test de chargement du dataset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Installation des dépendances
+        run: pip install --quiet scikit-learn pandas numpy
+
+      - name: Test de chargement KDD99 avec fallback NSL-KDD
+        run: |
+          python - << 'EOF'
+          import pandas as pd
+          import numpy as np
+
+          try:
+              from sklearn.datasets import fetch_kddcup99
+              kdd = fetch_kddcup99(subset='http', as_frame=True, percent10=True)
+              df  = kdd.frame.copy()
+              for col in df.select_dtypes(include='object').columns:
+                  df[col] = df[col].apply(lambda x: x.decode() if isinstance(x, bytes) else x)
+              print(f'KDD99 chargé : {df.shape[0]:,} échantillons')
+          except Exception as e:
+              print(f'KDD99 inaccessible ({e}) — bascule NSL-KDD')
+              NOMS = [
+                  'duration','protocol_type','service','flag','src_bytes','dst_bytes',
+                  'land','wrong_fragment','urgent','hot','num_failed_logins','logged_in',
+                  'num_compromised','root_shell','su_attempted','num_root',
+                  'num_file_creations','num_shells','num_access_files','num_outbound_cmds',
+                  'is_host_login','is_guest_login','count','srv_count','serror_rate',
+                  'srv_serror_rate','rerror_rate','srv_rerror_rate','same_srv_rate',
+                  'diff_srv_rate','srv_diff_host_rate','dst_host_count','dst_host_srv_count',
+                  'dst_host_same_srv_rate','dst_host_diff_srv_rate',
+                  'dst_host_same_src_port_rate','dst_host_srv_diff_host_rate',
+                  'dst_host_serror_rate','dst_host_srv_serror_rate','dst_host_rerror_rate',
+                  'dst_host_srv_rerror_rate','labels','difficulty_level'
+              ]
+              df = pd.read_csv(
+                  'https://raw.githubusercontent.com/defcom17/NSL_KDD/master/KDDTrain+.txt',
+                  names=NOMS
+              ).drop(columns=['difficulty_level'])
+              print(f'NSL-KDD chargé : {df.shape[0]:,} échantillons')
+
+          assert len(df) > 0, 'Dataset vide'
+          assert 'labels' in df.columns, 'Colonne labels manquante'
+          print('Test de chargement réussi.')
+          EOF
