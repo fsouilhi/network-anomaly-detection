@@ -95,6 +95,7 @@ class Autoencoder(nn.Module):
         with torch.no_grad():
             return ((x - self.forward(x)) ** 2).mean(dim=1).cpu().numpy()
 
+
 # ---------------------------------------------------------------------------
 # Chargement et entraînement (mis en cache)
 # ---------------------------------------------------------------------------
