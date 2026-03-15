@@ -15,6 +15,14 @@ Ce projet se distingue du projet [Adversarial Attacks on IDS](https://github.com
 
 ---
 
+## Démo interactive
+
+> **[Lancer la démo Streamlit](https://network-anomaly-detection-pvqxqknokaqmm4xyaj3zba.streamlit.app)**
+
+La démo permet de comparer les trois modèles en temps réel, de visualiser les scores d'anomalie et de faire varier le nombre d'échantillons.
+
+---
+
 ## Structure du dépôt
 
 ```
