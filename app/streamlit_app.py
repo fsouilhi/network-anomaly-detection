@@ -299,10 +299,18 @@ if lancer:
         st.markdown("**Distribution des scores d'anomalie**")
         fig, ax = plt.subplots(figsize=(5, 3.5), facecolor="#0f172a")
         ax.set_facecolor("#0f172a")
+        all_scores = scores[np.isfinite(scores)]
+        use_log = all_scores.max() / (all_scores.min() + 1e-10) > 1000
         for label_val, couleur, nom in zip([0, 1], ['steelblue', 'tomato'], ['Normal', 'Attaque']):
             vals = scores[y_sub == label_val]
             vals = vals[np.isfinite(vals)]
-            ax.hist(vals, bins=60, alpha=0.6, label=nom, color=couleur, density=True)
+            if len(vals) > 0:
+                p1, p99 = np.percentile(vals, 1), np.percentile(vals, 99)
+                vals = vals[(vals >= p1) & (vals <= p99)]
+            if len(vals) > 0:
+                ax.hist(vals, bins=60, alpha=0.6, label=nom, color=couleur, density=True, log=use_log)
+        if use_log:
+            ax.set_ylabel('Densité (log)', color="#94a3b8")
         if modele_choisi == "Autoencoder":
             ax.axvline(seuil_ae, color='#fbbf24', linestyle='--', label=f'Seuil ({seuil_ae:.5f})')
         ax.set_xlabel("Score d'anomalie", color="#94a3b8")
