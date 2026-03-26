@@ -36,6 +36,15 @@ network-anomaly-detection/
 
 ---
 
+
+## Screenshots
+
+![Vue générale](assets/demo_overview.png)
+
+![Matrice de confusion & Distribution des scores](assets/demo_results.png)
+
+![Comparaison des trois modèles](assets/demo_comparison.png)
+
 ## Méthodologie
 
 ### 1. Jeu de données — KDD Cup 1999 (sous-ensemble HTTP)
