@@ -308,7 +308,7 @@ if lancer:
                 p1, p99 = np.percentile(vals, 1), np.percentile(vals, 99)
                 vals = vals[(vals >= p1) & (vals <= p99)]
             if len(vals) > 0:
-                ax.hist(vals, bins=60, alpha=0.6, label=nom, color=couleur, density=True, log=use_log)
+                ax.hist(vals, bins=min(60, len(np.unique(vals))), alpha=0.6, label=nom, color=couleur, density=True, log=use_log)
         if use_log:
             ax.set_ylabel('Densité (log)', color="#94a3b8")
         if modele_choisi == "Autoencoder":
