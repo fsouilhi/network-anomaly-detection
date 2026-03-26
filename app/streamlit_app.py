@@ -25,10 +25,6 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-# ---------------------------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------------------------
-
 st.set_page_config(
     page_title="Détection d'Anomalies Réseau",
     page_icon="🔍",
@@ -38,44 +34,52 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    .metric-card {
-        background: #1e293b;
+    :root {
+        --bg-card: #1e293b;
+        --bg-sidebar: #0f172a;
+        --text-primary: #f1f5f9;
+        --text-secondary: #e2e8f0;
+        --text-tertiary: #94a3b8;
+        --border-blue: #60a5fa;
+        --border-red: #f87171;
+        --border-green: #34d399;
+    }
+
+    .metric-card, .alert-card, .normal-card {
         border-radius: 8px;
         padding: 1rem 1.2rem;
-        border-left: 3px solid #60a5fa;
+        transition: all 0.2s ease;
     }
-    .metric-card h3 { margin: 0; font-size: 0.8rem; color: #94a3b8; letter-spacing: 0.05em; }
-    .metric-card p  { margin: 0.2rem 0 0; font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
-    .alert-card {
-        background: #1e293b;
-        border-radius: 8px;
-        padding: 1rem 1.2rem;
-        border-left: 3px solid #f87171;
+
+    .metric-card { background: var(--bg-card); border-left: 3px solid var(--border-blue); }
+    .alert-card { background: var(--bg-card); border-left: 3px solid var(--border-red); }
+    .normal-card { background: var(--bg-card); border-left: 3px solid var(--border-green); }
+
+    .metric-card h3, .alert-card h3, .normal-card h3 {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-tertiary);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-weight: 600;
     }
-    .alert-card h3 { margin: 0; font-size: 0.8rem; color: #94a3b8; letter-spacing: 0.05em; }
-    .alert-card p  { margin: 0.2rem 0 0; font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
-    .normal-card {
-        background: #1e293b;
-        border-radius: 8px;
-        padding: 1rem 1.2rem;
-        border-left: 3px solid #34d399;
+
+    .metric-card p, .alert-card p, .normal-card p {
+        margin: 0.2rem 0 0;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text-primary);
     }
-    .normal-card h3 { margin: 0; font-size: 0.8rem; color: #94a3b8; letter-spacing: 0.05em; }
-    .normal-card p  { margin: 0.2rem 0 0; font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
-    section[data-testid="stSidebar"] { background: #0f172a; }
+
+    section[data-testid="stSidebar"] { background: var(--bg-sidebar); }
     section[data-testid="stSidebar"] p,
     section[data-testid="stSidebar"] span,
     section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] div { color: #e2e8f0; }
+    section[data-testid="stSidebar"] div { color: var(--text-secondary); }
     section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3 { color: #f1f5f9; font-weight: 700; }
+    section[data-testid="stSidebar"] h3 { color: var(--text-primary); font-weight: 700; }
 </style>
 """, unsafe_allow_html=True)
-
-
-# ---------------------------------------------------------------------------
-# Modèle Autoencoder
-# ---------------------------------------------------------------------------
 
 class Autoencoder(nn.Module):
 
@@ -100,10 +104,6 @@ class Autoencoder(nn.Module):
         with torch.no_grad():
             return ((x - self.forward(x)) ** 2).mean(dim=1).cpu().numpy()
 
-
-# ---------------------------------------------------------------------------
-# Chargement et entraînement (mis en cache)
-# ---------------------------------------------------------------------------
 
 @st.cache_resource(show_spinner="Chargement des données et entraînement des modèles…")
 def charger_et_entrainer():
@@ -201,10 +201,6 @@ def charger_et_entrainer():
     return iso, lof, ae, scaler, seuil_ae, X_all_s, X_all_t, y, feature_cols, CONTAMINATION
 
 
-# ---------------------------------------------------------------------------
-# Interface
-# ---------------------------------------------------------------------------
-
 st.title("Détection d'Anomalies dans les Logs Réseau")
 st.caption("KDD Cup 1999 · Isolation Forest · LOF · Autoencoder PyTorch · Approche semi-supervisée")
 st.divider()
@@ -245,7 +241,7 @@ with c4:
 st.divider()
 
 if lancer:
-    idx = np.random.RandomState(42).choice(len(y), nb_echantillons, replace=False)
+    idx = np.random.choice(len(y), nb_echantillons, replace=False)
     X_sub = X_all_s[idx]
     y_sub = y[idx]
 
